@@ -1,10 +1,14 @@
 import gspread
+import os
+import json
 import pandas as pd
 from flask import Flask, jsonify
 from google.oauth2.service_account import Credentials
 
 # ================== CẤU HÌNH ==================
-SERVICE_ACCOUNT_FILE = "service_account.json"
+service_account_info = json.loads(
+    os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
+)
 SHEET_ID = "1XiGxHxrygIQ3fiwnA6mgYH649ituRUQJaHy0L0ON1eo"
 
 SCOPES = [
@@ -17,8 +21,9 @@ app = Flask(__name__)
 # ================== HÀM CHÍNH ==================
 def run_ranking():
     # 1. Kết nối Google Sheets
-    creds = Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    creds = Credentials.from_service_account_info(
+        service_account_info,
+        scopes=SCOPES
     )
     client = gspread.authorize(creds)
     spreadsheet = client.open_by_key(SHEET_ID)
